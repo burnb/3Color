@@ -4,6 +4,11 @@ class formView {
 ?>
 <form class="form-horizontal white-popup-block mfp-hide" id="form" role="form">
     <div class="form-group">
+        <div class="col-md-8">
+            <input type="hidden" class="form-control" id="id"/>
+        </div>
+    </div>
+    <div class="form-group">
         <label for="name" class="col-md-4 control-label">Имя:</label>
         <div class="col-md-8">
             <input class="form-control" id="name" type="text" placeholder="Имя"/>

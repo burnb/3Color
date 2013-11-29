@@ -21,10 +21,10 @@ include_once "module.php";
 <body>
 <div class="container">
     <nav class="navbar navbar-inverse navbar-fixed-top" role='navigation'>
-        <div class="col-lg-offset-1 col-lg-2">
-            <a class="popup-with-form" href="#form"><button class="btn btn-warning navbar-btn" onlick="return false;">Добавить</button></a>
+        <div class="col-sm-offset-1 col-sm-2">
+            <a class="popup-with-form" href="#form"><button class="btn btn-warning navbar-btn" id="btn_add">Добавить</button></a>
         </div>
-        <div class="navbar-right col-sm-1"></div>
+        <div class="navbar-right col-sm-6"></div>
         <div class="col-sm-3 navbar-right navbar-text" id='info'>
         </div>
     </nav>
@@ -41,7 +41,7 @@ include_once "module.php";
         </thead>
         <tbody>
 <?php
-    users::view(); /*Метод из module.php для отрисовки талицы*/
+    users::view(); /*Метод из module.php для отрисовки таблицы*/
 ?>
     </tbody>
     </table>

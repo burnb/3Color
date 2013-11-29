@@ -1,6 +1,12 @@
+function clearForm(){
+    $('#id').val('');
+    $('#name').val('');                 //очистка формы
+    $('#gender').val('');
+    $('#datepicker').val('');
+    $('#phone').val('');
+};
 //===========Magnific-Popup(модальное окно формы)===========//
-
-$(document).ready(function() {
+function mp(){
     $('.popup-with-form').magnificPopup({
         type: 'inline',
         preloader: false,
@@ -17,8 +23,7 @@ $(document).ready(function() {
             }
         }
     });
-});
-
+};
 
 //===========Datepicker(Календарик)===========//
 
@@ -29,40 +34,93 @@ $(function() {
 //===========Save===========//
 
 $(document).ready(function(){
+    mp();
+    $('#btn_add').click(function(){
+        $('#id').val('');
+    });
     $('#btn_save').click(function(){
+        var id = $('#id').val();
         var name = $('#name').val();
         var gender = $('#gender').val();
         var data = $('#datepicker').val();
         var phone = $('#phone').val();
-        $.ajax({                                        //отправка данных на addUser.php, где все сохраняется в БД
-            type: "POST",
-            url: "addUser.php",
-            data: "name=" + name
-                + "&gender=" + gender
-                + "&data=" + data
-                + "&phone=" + phone,
-            success: function(response){
-                if(response == "OK"){
-                    $('#name').val('');                 //очистка формы
-                    $('#gender').val('');
-                    $('#datepicker').val('');
-                    $('#phone').val('');
-                    var magnificPopup = $.magnificPopup.instance;   //скрытие формы
-                    magnificPopup.close();
-                    $('#info').empty().addClass('alert alert-warning').fadeIn().append('Пользователь ' + name + ' добавлен!').delay(3000).fadeOut();    //отрисовка алерта в главном окне
-                    $('.userview').remove();    //чистка таблицы
-                    $.ajax({                    //перегрузка таблицы
-                        type: "POST",
-                        url: "updateView.php",
-                        data: "reload=true",
-                        success: function(response){
-                            $('tbody').append(response);
-                        }
-                    })
-                }else
-                    alert("Ошибка!" + response);
-            }
-        });
+        if(!id){
+            $.ajax({                                        //отправка данных на addUser.php, где все сохраняется в БД
+                type: "POST",
+                url: "addUser.php",
+                data: "name=" + name
+                    + "&gender=" + gender
+                    + "&data=" + data
+                    + "&phone=" + phone,
+                success: function(response){
+                    var json = jQuery.parseJSON(response);
+                    if(json.suc){
+                        clearForm();
+                        var magnificPopup = $.magnificPopup.instance;   //скрытие формы
+                        magnificPopup.close();
+                        $('#info').empty().addClass('alert alert-warning').fadeIn().append('Пользователь ' + name + ' добавлен!').delay(3000).fadeOut();    //отрисовка алерта в главном окне
+                        $('.userview').remove();    //чистка таблицы
+                        $.ajax({                    //перегрузка таблицы
+                            type: "POST",
+                            url: "updateView.php",
+                            data: "reload=true",
+                            success: function(response){
+                                $('tbody').append(response);
+                                mp();
+                            }
+                        });
+                    }else
+                        alert("Ошибка! " + json.err);
+                }
+             });
+        }else{
+            $.ajax({                                        //отправка данных на editUser.php, где обновляются данные в БД
+                type: "POST",
+                url: "editUser.php",
+                data: "id=" + id
+                    +"&name=" + name
+                    + "&gender=" + gender
+                    + "&data=" + data
+                    + "&phone=" + phone,
+                success: function(response){
+                    var json = jQuery.parseJSON(response);
+                    if(json.suc){
+                        clearForm();
+                        var magnificPopup = $.magnificPopup.instance;   //скрытие формы
+                        magnificPopup.close();
+                        $('#info').empty().addClass('alert alert-warning').fadeIn().append('Данные пользователя ' + name + ' обновлены!').delay(3000).fadeOut();    //отрисовка алерта в главном окне
+                        $('.userview').remove();    //чистка таблицы
+                        $.ajax({                    //перегрузка таблицы
+                            type: "POST",
+                            url: "updateView.php",
+                            data: "reload=true",
+                            success: function(response){
+                                $('tbody').append(response);
+                                mp();
+                            }
+                        });
+                    }else
+                        alert("Ошибка при редактировании! " + json.err);
+                }
+            });
+        }
+    });
+});
+
+//===========Edit===========//
+$(document).ready(function(){
+    $(document).on('click','.btn_edit',function(){
+        var id = $(this).val();
+        var name = $(this).parent().parent().parent().find('.tdName').html();
+        var gender = $(this).parent().parent().parent().find('.tdGender').html();
+        if(gender=='Мужской') gender='man';else gender='women';
+        var date = $(this).parent().parent().parent().find('.tdDate').html();
+        var phone = $(this).parent().parent().parent().find('.tdPhone').html();
+        $('#id').val(id);
+        $('#name').val(name);
+        $('#gender').val(gender);
+        $('#datepicker').val(date);
+        $('#phone').val(phone);
     });
 });
 
@@ -78,7 +136,8 @@ $(document).ready(function(){
                 url: "delUser.php",
                 data: "id=" + id,
                 success: function(response){
-                    if(response == "del_ok"){
+                    var json = jQuery.parseJSON(response);
+                    if(json.suc){
                         $('#info').empty().addClass('alert alert-warning').fadeIn().append('Пользователь удален!').delay(3000).fadeOut();       //отрисовка алерта в главном окне
                         $('.userview').remove();    //чистка таблицы
                         $.ajax({                    //перегрузка таблицы
@@ -87,10 +146,11 @@ $(document).ready(function(){
                             data: "reload=true",
                             success: function(response){
                                 $('tbody').append(response);
+                                mp();
                             }
                         });
                     }else
-                        alert("Ошибка!" + response);
+                        alert(json.err);
                 }
             });
         }
