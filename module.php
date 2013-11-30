@@ -9,7 +9,39 @@ class users {
     public $connect;
 
     private function filter(){
+        $this->id=strip_tags(addslashes(trim($this->id)));
+        $this->name=strip_tags(addslashes(trim($this->name)));
+        $this->gender=strip_tags(addslashes(trim($this->gender)));
+        $this->data=strip_tags(addslashes(trim($this->data)));
+        $this->phone=strip_tags(addslashes(trim($this->phone)));
+    }
 
+    public function valid(){
+        $e=0;
+        $errorForm=array();
+        $this->filter();
+        if (empty($this->name)){
+            $errorForm['inputName'] = 'Заполните поле с именем.';
+            $e++;
+        }
+        if ($this->gender!="man" && $this->gender!="women"){
+            $errorForm['inputGender'] = 'Укажите пол';
+            $e++;
+        }
+        if (empty($this->data)){
+            $errorForm['inputDate'] = 'Заполните дату рождения';
+            $e++;
+        }
+        if (empty($this->phone)){
+            $errorForm['inputPhone'] = 'Заполните поле телефон';
+            $e++;
+        }
+        if (!$e){
+            if (strlen($this->name)>256) $errorForm['inputName'] = 'Имя должно быть не более 256 символов';
+
+
+        }
+        return $errorForm;
     }
 
     private function get(){                                 //выборка всех не удаленных юзеров
@@ -25,6 +57,8 @@ class users {
     }
 
     public function add(){                                 //добавление юзера
+        $this->filter();
+        $this->data=date('Y-m-d', strtotime($this->data));
         if($this->connect->query("
                     INSERT INTO users (name, gender, date, phone, del)
                     VALUES ('$this->name', '$this->gender', '$this->data', '$this->phone', '0')
@@ -35,6 +69,7 @@ class users {
     }
 
     public function del(){                                 //удаление юзера
+        $this->filter();
         if($this->connect->query("
                     UPDATE users
                     SET del=('1')
@@ -46,6 +81,8 @@ class users {
     }
 
     public function update(){
+        $this->filter();
+        $this->data=date('Y-m-d', strtotime($this->data));
         if($this->connect->query("
                     UPDATE users
                     SET name= '$this->name',gender='$this->gender',date='$this->data',phone='$this->phone'

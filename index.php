@@ -22,8 +22,7 @@ include_once "module.php";
 <div class="container">
     <nav class="navbar navbar-inverse navbar-fixed-top" role='navigation'>
         <div class="col-sm-offset-1 col-sm-2">
-            <a class="popup-with-form" href="#form"><button class="btn btn-warning navbar-btn" id="btn_add">Добавить</button></a>
-        </div>
+            <a class="popup-with-form" href="#form"><button class="btn btn-warning navbar-btn" id="btn_add">Добавить</button></a> </div>
         <div class="navbar-right col-sm-6"></div>
         <div class="col-sm-3 navbar-right navbar-text" id='info'>
         </div>

@@ -5,6 +5,10 @@ function clearForm(){
     $('#datepicker').val('');
     $('#phone').val('');
 };
+function clearFormError(){
+    $('.form-group').removeClass('has-error');
+    $('#formError').removeClass('alert alert-warning').empty();
+}
 //===========Magnific-Popup(модальное окно формы)===========//
 function mp(){
     $('.popup-with-form').magnificPopup({
@@ -37,8 +41,10 @@ $(document).ready(function(){
     mp();
     $('#btn_add').click(function(){
         $('#id').val('');
+        clearFormError();
     });
     $('#btn_save').click(function(){
+        clearFormError();
         var id = $('#id').val();
         var name = $('#name').val();
         var gender = $('#gender').val();
@@ -53,7 +59,7 @@ $(document).ready(function(){
                     + "&data=" + data
                     + "&phone=" + phone,
                 success: function(response){
-                    var json = jQuery.parseJSON(response);
+                    var json = $.parseJSON(response);
                     if(json.suc){
                         clearForm();
                         var magnificPopup = $.magnificPopup.instance;   //скрытие формы
@@ -70,7 +76,13 @@ $(document).ready(function(){
                             }
                         });
                     }else
-                        alert("Ошибка! " + json.err);
+                        if(json.err) alert("Ошибка! " + json.err);
+                        else{
+                            for(var key in json){
+                                $('#'+key).addClass('has-error');
+                                $('#formError').addClass('alert alert-warning').append(json[key]+'<br>');
+                            }
+                        }
                 }
              });
         }else{
@@ -83,7 +95,7 @@ $(document).ready(function(){
                     + "&data=" + data
                     + "&phone=" + phone,
                 success: function(response){
-                    var json = jQuery.parseJSON(response);
+                    var json = $.parseJSON(response);
                     if(json.suc){
                         clearForm();
                         var magnificPopup = $.magnificPopup.instance;   //скрытие формы
@@ -100,7 +112,13 @@ $(document).ready(function(){
                             }
                         });
                     }else
-                        alert("Ошибка при редактировании! " + json.err);
+                    if(json.err) alert("Ошибка при редактировании! " + json.err);
+                    else{
+                        for(var key in json){
+                            $('#'+key).addClass('has-error');
+                            $('#formError').addClass('alert alert-warning').append(json[key]+'<br>');
+                        }
+                    }
                 }
             });
         }
