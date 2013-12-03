@@ -1,5 +1,4 @@
 <?php
-include_once "form.php";
 include_once "module.php";
 ?>
 <!DOCTYPE HTML>
@@ -39,14 +38,13 @@ include_once "module.php";
         </thead>
         <tbody>
 <?php
-    users::view(); /*Метод из module.php для отрисовки таблицы*/
+    views::view(); /*Метод из module.php для отрисовки таблицы*/
 ?>
     </tbody>
     </table>
 </div>
 <?php
-$form = new formView();
-$form->displayForm(); /*отрисовка формы из form.php*/
+    views::form();  /*Метод из module.php для отрисовки формы*/
 ?>
 </body>
 </html>

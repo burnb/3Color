@@ -1,7 +1,7 @@
 <?php
 include_once "module.php";
 if ($_POST['reload']) {
-    users::view();
+    views::view();
 } else {
     echo "Ошибка reload!";
 }

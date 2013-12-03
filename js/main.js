@@ -1,14 +1,3 @@
-function clearForm(){
-    $('#id').val('');
-    $('#name').val('');                 //очистка формы
-    $('#gender').val('');
-    $('#datepicker').val('');
-    $('#phone').val('');
-};
-function clearFormError(){
-    $('.form-group').removeClass('has-error');
-    $('#formError').removeClass('alert alert-warning').empty();
-}
 //===========Magnific-Popup(модальное окно формы)===========//
 function mp(){
     $('.popup-with-form').magnificPopup({
@@ -27,19 +16,29 @@ function mp(){
             }
         }
     });
-};
-
+}
 //===========Datepicker(Календарик)===========//
-
 $(function() {
     $( "#datepicker" ).datepicker({ dateFormat: "dd.mm.yy" });
-});
-
+})
+//===========Clear Form data + error ===========//
+function clearForm(){
+    $('#id').val('');
+    $('#name').val('');
+    $('#gender').val('');
+    $('#datepicker').val('');
+    $('#phone').val('');
+}
+function clearFormError(){
+    $('.form-group').removeClass('has-error');
+    $('#formError').removeClass('alert alert-warning').empty();
+}
 //===========Save===========//
 
 $(document).ready(function(){
     mp();
     $('#btn_add').click(function(){
+        $('#form').removeAttr('style');
         $('#id').val('');
         clearFormError();
     });
@@ -123,11 +122,10 @@ $(document).ready(function(){
             });
         }
     });
-});
-
 //===========Edit===========//
-$(document).ready(function(){
     $(document).on('click','.btn_edit',function(){
+        $('#form').removeAttr('style');
+        clearFormError();
         var id = $(this).val();
         var name = $(this).parent().parent().parent().find('.tdName').html();
         var gender = $(this).parent().parent().parent().find('.tdGender').html();
@@ -140,11 +138,7 @@ $(document).ready(function(){
         $('#datepicker').val(date);
         $('#phone').val(phone);
     });
-});
-
 //===========Delete===========//
-
-$(document).ready(function(){
     $(document).on('click','.btn_del',function(){
         var id = $(this).val();                                         //парсим id юзера
         var name = $(this).parent().parent().find('.tdName').html();    //парсим имя юзера
@@ -174,3 +168,8 @@ $(document).ready(function(){
         }
     });
 });
+
+
+
+
+

@@ -9,11 +9,11 @@ class users {
     public $connect;
 
     private function filter(){
-        $this->id=strip_tags(addslashes(trim($this->id)));
-        $this->name=strip_tags(addslashes(trim($this->name)));
-        $this->gender=strip_tags(addslashes(trim($this->gender)));
-        $this->data=strip_tags(addslashes(trim($this->data)));
-        $this->phone=strip_tags(addslashes(trim($this->phone)));
+        $this->id=strip_tags(mysql_real_escape_string(trim($this->id)));
+        $this->name=strip_tags(mysql_real_escape_string(trim($this->name)));
+        $this->gender=strip_tags(mysql_real_escape_string(trim($this->gender)));
+        $this->data=strip_tags(mysql_real_escape_string(trim($this->data)));
+        $this->phone=strip_tags(mysql_real_escape_string(trim($this->phone)));
     }
 
     public function valid(){
@@ -21,39 +21,28 @@ class users {
         $errorForm=array();
         $this->filter();
         if (empty($this->name)){
-            $errorForm['inputName'] = 'Заполните поле с именем.';
+            $errorForm['inputName'] = 'Заполните поле "Имя"!';
             $e++;
         }
         if ($this->gender!="man" && $this->gender!="women"){
-            $errorForm['inputGender'] = 'Укажите пол';
+            $errorForm['inputGender'] = 'Укажите пол!';
             $e++;
         }
         if (empty($this->data)){
-            $errorForm['inputDate'] = 'Заполните дату рождения';
+            $errorForm['inputDate'] = 'Заполните поле "Дата рождения"!';
             $e++;
         }
         if (empty($this->phone)){
-            $errorForm['inputPhone'] = 'Заполните поле телефон';
+            $errorForm['inputPhone'] = 'Заполните поле "Телефон"!'.$this->data;
             $e++;
         }
         if (!$e){
-            if (strlen($this->name)>256) $errorForm['inputName'] = 'Имя должно быть не более 256 символов';
-
-
+            if (strlen($this->name)>256) $errorForm['inputName'] = 'Имя должно быть не более 256 символов!';
+            if (!preg_match('/^(0[1-9]|[1-2][0-9]|3[0-1]).(0[1-9]|1[0-2]).[0-9]{4}$/',$this->data)) $errorForm['inputDate'] = 'Поле "Дата рождения" заполненно некорректно!';
+            if (!preg_match('/^(8)\(([0-9]{4})\)([0-9]{2})-([0-9]{2})-([0-9]{2})$/',$this->phone)) $errorForm['inputPhone'] = 'Поле "Телефон" заполненно некорректно!<br> Правильный формат 8(хххх)хх-хх-хх';
         }
         return $errorForm;
-    }
 
-    private function get(){                                 //выборка всех не удаленных юзеров
-        include_once "config.php";
-        if($result = $connect->query("
-                     SELECT id, name, gender, date, phone
-                     FROM users
-                     WHERE del = 0
-        "))
-            return $result;
-        else
-            return $connect->error;
     }
 
     public function add(){                                 //добавление юзера
@@ -92,29 +81,31 @@ class users {
         else
             return array('suc' => '', 'err' => $this->name.$this->id.$this->connect->error);
     }
+}
+
+class views{
+    private function get(){                                 //выборка всех не удаленных юзеров
+        include_once "config.php";
+        if($result = $connect->query("
+                     SELECT id, name, gender, date, phone
+                     FROM users
+                     WHERE del = 0
+        "))
+            return $result;
+        else
+            return $connect->error;
+    }
+    static function form(){
+        include_once 'views/form.php';
+    }
 
     static function view(){                             //отрисовка всех юзеров в таблицу
-        $alluser = users::get();
+        $alluser = views::get();
         if (is_string($alluser)){
             echo('<br>Ошибка запроса на отрисовку: '.$alluser);
             exit();
         };
-        $i=0;
-        while($u=$alluser->fetch_assoc()){
-            $i++;
-            $gender=($u['gender']=='man')?'Мужской':'Женский';
-            echo ("
-                <tr class='userview'>
-                    <td>$i</td>
-                    <td class='tdName'>".$u['name']."</td>
-                    <td class='tdGender'>".$gender."</td>
-                    <td class='tdDate'>".date('d.m.Y', strtotime($u['date']))."</td>
-                    <td class='tdPhone'>".$u['phone']."</td>
-                    <td><a class='popup-with-form' href='#form'><button class='btn_edit btn btn-success' value=".$u['id'].">...</button></a>
-                    <button type='button' class='btn_del btn btn-danger' value=".$u['id'].">X</button></td>
-                </tr>
-            ");
+        include_once 'views/table.php';
         }
-    }
 }
 ?>
