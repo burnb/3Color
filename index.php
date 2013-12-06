@@ -17,7 +17,7 @@ include_once "module.php";
     <link href="css/main.css" rel="stylesheet" media="screen" type="text/css"/>
 </head>
 <body>
-<div class="container">
+<div class="container body">
     <nav class="navbar navbar-inverse navbar-fixed-top" role='navigation'>
         <div class="col-sm-offset-1 col-sm-2">
             <a class="popup-with-form" href="#form"><button class="btn btn-warning navbar-btn" id="btn_add">Добавить</button></a> </div>
@@ -43,6 +43,23 @@ include_once "module.php";
     </tbody>
     </table>
 </div>
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="container">
+                        <small>© 2013 Company. All rights reserved. Proudly made in Russia.</small>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="container">
+                        <img src="./img/Physicist.fw.png" height="20"><a href="http://www.phdevelop.com">Physicist</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
     views::form();  /*Метод из module.php для отрисовки формы*/
 ?>
