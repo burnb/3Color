@@ -9,7 +9,7 @@ echo '
         <div class="form-group" id="inputName">
             <label for="name" class="col-md-4 control-label">Имя:</label>
             <div class="col-md-8">
-                <input class="form-control" id="name" type="text" placeholder="Имя" maxlength="256"/>
+                <input class="form-control" id="name" type="text" placeholder="Имя" maxlength="512"/>
             </div>
         </div>
         <div class="form-group" id="inputGender">

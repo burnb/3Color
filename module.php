@@ -8,15 +8,15 @@ class users {
     public $del;
     public $connect;
 
-    private function filter(){
-        $this->id=strip_tags(mysql_real_escape_string(trim($this->id)));
-        $this->name=strip_tags(mysql_real_escape_string(trim($this->name)));
-        $this->gender=strip_tags(mysql_real_escape_string(trim($this->gender)));
-        $this->data=strip_tags(mysql_real_escape_string(trim($this->data)));
-        $this->phone=strip_tags(mysql_real_escape_string(trim($this->phone)));
+    private function filter(){  //фильтрация данных формы
+        $this->id=strip_tags($this->connect->real_escape_string(trim($this->id)));
+        $this->name=strip_tags($this->connect->real_escape_string(trim($this->name)));
+        $this->gender=strip_tags($this->connect->real_escape_string(trim($this->gender)));
+        $this->data=strip_tags($this->connect->real_escape_string(trim($this->data)));
+        $this->phone=strip_tags($this->connect->real_escape_string(trim($this->phone)));
     }
 
-    public function valid(){
+    public function valid(){    //php проверки данных формы
         $e=0;
         $errorForm=array();
         $this->filter();
@@ -33,7 +33,7 @@ class users {
             $e++;
         }
         if (empty($this->phone)){
-            $errorForm['inputPhone'] = 'Заполните поле "Телефон"!'.$this->data;
+            $errorForm['inputPhone'] = 'Заполните поле "Телефон"!';
             $e++;
         }
         if (!$e){
@@ -51,10 +51,13 @@ class users {
         if($this->connect->query("
                     INSERT INTO users (name, gender, date, phone, del)
                     VALUES ('$this->name', '$this->gender', '$this->data', '$this->phone', '0')
-        "))
-           return array('suc' => 1);
-        else
-           return array('suc' => '', 'err' => $this->connect->error);
+        ")){
+           return array('suc' => $this->name);
+        }else{
+            $err=$this->connect->error;
+            $this->connect->close();
+            return array('suc' => '', 'err' => $err);
+        }
     }
 
     public function del(){                                 //удаление юзера
@@ -63,23 +66,31 @@ class users {
                     UPDATE users
                     SET del=('1')
                     WHERE id = '$this->id'
-        "))
+        ")){
+            $this->connect->close();
             return array('suc' => 1);
-        else
-            return array('suc' => '', 'err' => "Ошибка удаления ".$this->connect->error);
+        }else{
+            $err=$this->connect->error;
+            $this->connect->close();
+            return array('suc' => '', 'err' => "Ошибка удаления ".$err);
+        }
     }
 
-    public function update(){
+    public function update(){                           //сохранение отредактированных данных
         $this->filter();
         $this->data=date('Y-m-d', strtotime($this->data));
         if($this->connect->query("
                     UPDATE users
                     SET name= '$this->name',gender='$this->gender',date='$this->data',phone='$this->phone'
                     WHERE id = '$this->id'
-        "))
-            return array('suc' => 1);
-        else
-            return array('suc' => '', 'err' => $this->name.$this->id.$this->connect->error);
+        ")){
+            $this->connect->close();
+            return array('suc' => $this->name);
+        }else{
+            $err = $this->name.$this->id.$this->connect->error;
+            $this->connect->close();
+            return array('suc' => '', 'err' => $err);
+        }
     }
 }
 
@@ -90,12 +101,16 @@ class views{
                      SELECT id, name, gender, date, phone
                      FROM users
                      WHERE del = 0
-        "))
+        ")){
+            $connect->close();
             return $result;
-        else
-            return $connect->error;
+        }else{
+            $err=$connect->error;
+            $connect->close();
+            return $err;
+        }
     }
-    static function form(){
+    static function form(){                             //отрисовка формы
         include_once 'views/form.php';
     }
 
